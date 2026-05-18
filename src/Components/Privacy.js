@@ -39,7 +39,8 @@ export default function Privacy() {
   const [show, setShow] = useState({ old: false, new: false, confirm: false });
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState('idle'); // idle | loading | success | error
+  const [status, setStatus] = useState('idle'); 
+  const [serverError, setServerError] = useState('');
 
   const navigate = useNavigate();
 
@@ -63,32 +64,42 @@ export default function Privacy() {
     }
 
     setStatus('loading');
+    setServerError('');
 
     try {
-      // TODO: استبدلي هاد بالـ API الحقيقي لما يجهز
-      // const response = await fetch('/api/change-password', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     email: form.email,
-      //     old_password: form.oldPassword,
-      //     new_password: form.newPassword,
-      //   }),
-      // });
-      // if (!response.ok) throw new Error('Server error');
+      const token = localStorage.getItem('userToken'); 
 
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      const response = await fetch('https://api-zyzn.onrender.com/api/auth/change-password', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          email: form.email,
+          old_password: form.oldPassword,
+          new_password: form.newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setServerError(data.error || 'Something went wrong');
+        setStatus('error');
+        return;
+      }
 
       setStatus('success');
       setForm(INITIAL_FORM);
       setErrors({});
     } catch (err) {
-      console.error('Privacy update error:', err);
-      setStatus('error');
-    }
+  console.error('Privacy update error:', err);
+  setServerError('Server is starting up, please wait 30 seconds and try again.');
+  setStatus('error');
+}
   };
 
-  // classes مشتركة للـ input
   const baseInput = "w-full px-6 py-[14px] rounded-full border outline-none transition-all placeholder:text-[#C5C5C5] text-[15px] text-gray-700";
   const inputClass = (field) =>
     `${baseInput} ${errors[field] ? 'border-red-400 focus:border-red-400' : 'border-[#E5E7EB] focus:border-[#38B793]'}`;
@@ -116,7 +127,7 @@ export default function Privacy() {
         {/* Error message */}
         {status === 'error' && (
           <div className="mb-6 px-5 py-4 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-sm font-medium">
-            ❌ Something went wrong. Please try again later.
+            ❌ {serverError || 'Something went wrong. Please try again later.'}
           </div>
         )}
 

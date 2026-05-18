@@ -30,20 +30,6 @@ export default function Profilesidebar() {
 
   return (
     <div className="w-fit lg:w-full flex flex-col gap-3 transition-all duration-300">
-      <div className="hidden lg:flex flex-col items-center mb-8 p-6 bg-[#F1FAF8] rounded-[30px] border border-[#38B793]/10">
-        <div className="relative">
-          <img 
-            src={user?.avatar || "https://via.placeholder.com/150"} 
-            alt="profile" 
-            className="w-20 h-20 rounded-2xl object-cover shadow-sm border-2 border-white"
-          />
-          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-        </div>
-        <h2 className="mt-4 font-bold text-black text-lg">{user?.name || "Guest"}</h2>
-        <p className="text-[#38B793] text-xs font-semibold px-3 py-1 bg-white rounded-full mt-2 shadow-sm">
-          {user?.grade || "N/A"}
-        </p>
-      </div>
       {menuItems.map((item) => (
         <NavLink
           key={item.name}

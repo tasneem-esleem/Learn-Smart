@@ -34,6 +34,8 @@ import NotificationsPage from "./Page/NotificationsPage";
 import AssignmentsPage from "./Page/AssignmentsPage";
 import MessagesPage from "./Page/MessagesPage";
 import {UserProvider} from './Context/UserContext'
+import SubjectDetails from './Page/SubjectDetails'
+import ProtectedRoute from './Components/ProtectedRoute'
 function Layout() {
   return (
     <>
@@ -57,16 +59,29 @@ function LayoutNoFooter() {
 }
 function App() {
   return (
+     <UserProvider>
     <div className="App">
-    <UserProvider>
+   
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Desktop />} />
-            <Route path="/home" element={<Home/>} />
+            <Route path="/home" element={
+              <ProtectedRoute>
+                <Home/>
+              </ProtectedRoute>
+            } />
             <Route path="/about" element={<About/>} />
-            <Route path="/contact" element={<Contact/>} />
+            <Route path="/contact" element={
+              <ProtectedRoute>
+                <Contact/>
+              </ProtectedRoute>
+            } />
             <Route path="/moreMaterials" element={<MoreMaterials/>} />
-            <Route path="/studyYear" element={<StudyYear/>} />
+            <Route path="/studyYear" element={
+              <ProtectedRoute>
+                <StudyYear/>
+              </ProtectedRoute>
+            } />
             <Route path="/secondLiterary" element={<SecondLiterary/>} />
             <Route path="/secondScientific" element={<SecondScientific/>} />
             <Route path="/thirdLiterary" element={<ThirdLiterary/>} />
@@ -88,6 +103,11 @@ function App() {
               <Route path="/all-books" element={<AllBooks/>} />
               <Route path="/book/:id" element={<BookDetails/>} />
               <Route path="/notifications" element={<NotificationsPage/>} />
+              <Route  path="/subject/:bookId/:subjectName" element={
+                <ProtectedRoute>
+                  <SubjectDetails />
+                </ProtectedRoute>
+              } />
           </Route>
 
 
@@ -98,8 +118,9 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/terms" element={<Terms/>} />
         </Routes>
-   </UserProvider>
+  
     </div>
+     </UserProvider>
   );
 }
 // loading="lazy"

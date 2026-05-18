@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import omar from "../image/fal.png";
 import sarah from "../image/mai.png";
 import ahmed from "../image/Ellipse 119-2.png";
@@ -73,59 +74,79 @@ const Stars = ({ count }) => {
 };
 
 export default function Testimonials() {
+  const getCardVariants = (index) => {
+    const mod = index % 3;
+    if (mod === 0) return { hidden: { opacity: 0, x: -60 }, show: { opacity: 1, x: 0 } };
+    if (mod === 1) return { hidden: { opacity: 0, y: 60 }, show: { opacity: 1, y: 0 } };
+    return { hidden: { opacity: 0, x: 60 }, show: { opacity: 1, x: 0 } };
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12,
+      },
+    },
+  };
+
   return (
-    <section className="w-full px-4 sm:px-8 md:px-16 lg:px-28 py-12 sm:py-16 md:py-20 lg:py-20">
+    <section className="w-full px-4 sm:px-8 md:px-12 lg:px-24 py-12 sm:py-16 md:py-20 overflow-hidden">
       
-      {/* Header */}
-      <div className="flex flex-col items-center mb-10 sm:mb-12 lg:mb-14">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="flex flex-col items-center mb-12 sm:mb-16"
+      >
         <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3 sm:mb-4">
           What Our Student Say
         </h2>
-        <p className="text-gray-400 text-xs leading-5 text-center max-w-full sm:max-w-md px-4 sm:px-0">
+        <p className="text-gray-400 text-xs sm:text-sm leading-5 text-center max-w-full sm:max-w-md px-4 sm:px-0">
           Experiences and opinions of high school students who used the platform
           and benefited from the educational lessons.
         </p>
-      </div>
+      </motion.div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 lg:gap-16 justify-items-center">
-        {students.map((student) => (
-          <div
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-50px" }}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-6 md:gap-x-8 lg:gap-x-10 justify-items-center"
+      >
+        {students.map((student, index) => (
+          <motion.div
             key={student.id}
-            className="bg-white rounded-2xl px-4 sm:px-6 lg:px-8 pt-16 pb-6 sm:pb-8 flex flex-col items-center text-center relative w-full sm:w-[280px] md:w-[300px] h-auto sm:h-[230px] min-h-[240px]
-            cursor-pointer group transition-all duration-300 
-            hover:shadow-xl hover:-translate-y-2 hover:border hover:border-teal-200"
+            variants={getCardVariants(index)}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            whileHover={{ y: -8, border: "1px solid #99f6e4", boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)" }}
+            className="bg-white rounded-2xl px-5 sm:px-6 pt-14 pb-6 flex flex-col items-center text-center relative w-full max-w-[340px] cursor-pointer group transition-all duration-300"
             style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}
           >
-
-            
-            {/* Avatar */}
             <img
               src={student.img}
               alt={student.name}
               loading="lazy"
-              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover absolute -top-6 sm:-top-7 left-1/2 -translate-x-1/2
-              transition-transform duration-[1500ms] group-hover:rotate-[360deg]"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover absolute -top-7 left-1/2 -translate-x-1/2 transition-transform duration-[1500ms] group-hover:rotate-[360deg]"
             />
 
-            {/* Name */}
-            <p className="text-gray-900 font-bold text-sm sm:text-base -mt-3">
+            <p className="text-gray-900 font-bold text-sm sm:text-base mt-2">
               {student.name}
             </p>
 
-            {/* Year */}
             <p className="text-gray-400 text-[10px] sm:text-xs mb-1">{student.year}</p>
 
-            {/* Stars */}
             <Stars count={student.stars} />
 
-            {/* Review */}
-            <p className="text-gray-400 text-[10px] sm:text-xs leading-5 text-center mt-2 sm:mt-1 px-2">
+            <p className="text-gray-500 text-xs leading-relaxed text-center mt-3 px-1 flex-1">
               {student.review}
             </p>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 }

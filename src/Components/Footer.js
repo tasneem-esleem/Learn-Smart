@@ -15,12 +15,12 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row flex-wrap items-start justify-between gap-8 md:gap-10 mb-10">
 
           {/* Logo */}
-          <div className="w-40 mx-auto md:mx-0">
-            <img src={logo} alt="Learn Smart" loading="lazy" className="w-32 mx-auto md:mx-0" />
+          <div className="w-40 text-start">
+            <img src={logo} alt="Learn Smart" loading="lazy" className="w-32" />
           </div>
 
           {/* Menu */}
-          <div className="flex flex-col gap-3 text-center md:text-start mt-3 flex-1 min-w-[120px] font">
+          <div className="flex flex-col gap-3 text-start mt-3 flex-1 min-w-[120px]">
             <p className="text-gray-900 font-semibold text-sm mb-2">Menu</p>
             <Link to="/" className="text-black text-sm hover:text-teal-500 transition">Home</Link>
             <Link to="/about" className="text-black text-sm hover:text-teal-500 transition">About</Link>
@@ -30,7 +30,7 @@ export default function Footer() {
           </div>
 
           {/* Company */}
-          <div className="flex flex-col gap-3 text-center md:text-start mt-3 flex-1 min-w-[120px] font">
+          <div className="flex flex-col gap-3 text-start mt-3 flex-1 min-w-[120px]">
             <p className="text-gray-900 font-semibold text-sm mb-2">Company</p>
             <Link to="/terms" className="text-black text-sm hover:text-teal-500 transition">Terms & Conditions</Link>
             <Link to="/privacy" className="text-black text-sm hover:text-teal-500 transition">Privacy Policy</Link>
@@ -38,7 +38,7 @@ export default function Footer() {
           </div>
 
           {/* Support */}
-          <div className="flex flex-col gap-3 text-center md:text-start mt-3 flex-1 min-w-[120px] font">
+          <div className="flex flex-col gap-3 text-start mt-3 flex-1 min-w-[120px]">
             <p className="text-gray-900 font-semibold text-sm mb-2">Support</p>
             <Link to="/contact" className="text-black text-sm hover:text-teal-500 transition">Contact Us</Link>
             <Link to="/faq" className="text-black text-sm hover:text-teal-500 transition">FAQ/Help</Link>
@@ -46,13 +46,13 @@ export default function Footer() {
           </div>
 
           {/* Contact Us */}
-          <div className="flex flex-col gap-3 text-center md:text-start  mt-3 flex-1 min-w-[250px] font">
-            <p className="text-gray-900 font-semibold text-sm mb-2 ">Contact Us</p>
+          <div className="flex flex-col gap-3 text-start mt-3 flex-1 min-w-[250px]">
+            <p className="text-gray-900 font-semibold text-sm mb-2">Contact Us</p>
             <p className="text-black text-sm">0912345678</p>
             <p className="text-black text-sm">support@amazingtaiwan.com</p>
 
             {/* Email Input */}
-            <div className="mt-4 md:mt-10">
+            <div className="mt-4 w-full">
               <input
                 type="email"
                 placeholder="Your email here"

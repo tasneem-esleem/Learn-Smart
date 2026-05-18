@@ -9,7 +9,7 @@ export default function StudyYear() {
          <StudyMaterials 
                   title="First year of secondary school" 
                   subtitle=""
-                  data={subjects.slice(0, 8)} 
+                  data={subjects.slice(0, 8)|| []} 
                   gridClass="lg:grid-cols-2"
                   cardClass="max-w-[525px] min-h-[44px]" 
                 />

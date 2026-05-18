@@ -6,6 +6,7 @@ import { RxCross2 } from "react-icons/rx";
 import { FiSearch } from "react-icons/fi";
 import { MdOutlineNotificationsActive } from "react-icons/md";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/UserContext";
 
 const NavLinks = ({
   isMobile = false,
@@ -28,7 +29,7 @@ const NavLinks = ({
     ? setMobileDropdownOpen
     : setDesktopDropdownOpen;
   const dropdownRef = isMobile ? mobileDropdownRef : desktopDropdownRef;
-
+  const { user } = useAuth();
   return (
     <ul
       className={`${
@@ -142,7 +143,7 @@ const NavLinks = ({
                     } else if (
                       selectedYear === "Third year of secondary school"
                     ) {
-                      navigate("/thirdLiterary"); 
+                      navigate("/thirdLiterary");
                     }
                     setDropdownOpen(false);
                     setSelectedYear(null);
@@ -167,7 +168,7 @@ const NavLinks = ({
                     } else if (
                       selectedYear === "Third year of secondary school"
                     ) {
-                      navigate("/thirdScientific"); 
+                      navigate("/thirdScientific");
                     }
                     setDropdownOpen(false);
                     setSelectedYear(null);
@@ -238,20 +239,26 @@ const NavLinks = ({
               >
                 <FiSearch className="text-xl cursor-pointer text-gray-600" />
               </NavLink>
-              <Link to="/notifications">
-              <button
-                aria-label="Notifications"
-                className="hover:text-primary-green transition"
+              <NavLink
+                to="/notifications"
+                className={({ isActive }) =>
+                  `cursor-pointer transition ${
+                    isActive
+                      ? "text-primary-green"
+                      : "text-gray-600 hover:text-primary-green"
+                  }`
+                }
               >
-                <MdOutlineNotificationsActive className="text-xl cursor-pointer text-gray-600" />
-              </button>
-              </Link>
+                <button aria-label="Notifications" className="transition">
+                  <MdOutlineNotificationsActive className="text-xl cursor-pointer text-current" />
+                </button>
+              </NavLink>
 
               <Link to="/profile" aria-label="Go to profile">
                 <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200">
                   <img
-                    src="/user-avatar.jpg"
-                    alt="User profile picture"
+                    src={user?.avatar || "/user-avatar.jpg"}
+                    alt={user?.name || "User profile picture"}
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
@@ -286,7 +293,7 @@ export default function Header() {
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const { user } = useAuth();
   const [isLoggedIn, setIsLoggedIn] = useState(
     () => !!localStorage.getItem("userToken"),
   );
@@ -397,19 +404,25 @@ export default function Header() {
                 >
                   <FiSearch className="text-xl" />
                 </NavLink>
-                <Link to="/notifications">
-                <button
-                  aria-label="Notifications"
-                  className="hover:text-primary-green transition"
+                <NavLink
+                  to="/notifications"
+                  className={({ isActive }) =>
+                    `cursor-pointer transition ${
+                      isActive
+                        ? "text-primary-green"
+                        : "text-gray-600 hover:text-primary-green"
+                    }`
+                  }
                 >
-                  <MdOutlineNotificationsActive className="text-lg sm:text-xl cursor-pointer text-gray-600" />
-                </button>
-                  </Link>
+                  <button aria-label="Notifications" className="transition">
+                    <MdOutlineNotificationsActive className="text-xl cursor-pointer text-current" />
+                  </button>
+                </NavLink>
                 <Link to="/profile" aria-label="Go to profile">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-gray-200 cursor-pointer">
                     <img
-                      src="/user-avatar.jpg"
-                      alt="User profile picture"
+                      src={user?.avatar || "/user-avatar.jpg"}
+                      alt={user?.name || "User profile picture"}
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
