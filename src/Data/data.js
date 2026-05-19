@@ -102,7 +102,7 @@ export const subjects = [
   },
   {
     id: 10,
-    bookId: 10,
+    bookId: 26,
     name: "Arabic",
     img: ar,
     desc: "A subject in which we learn to read and write Arabic, understand its grammar, express ourselves correctly, and speak correctly.",

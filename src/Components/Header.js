@@ -30,6 +30,7 @@ const NavLinks = ({
     : setDesktopDropdownOpen;
   const dropdownRef = isMobile ? mobileDropdownRef : desktopDropdownRef;
   const { user } = useAuth();
+  
   return (
     <ul
       className={`${
@@ -366,10 +367,11 @@ export default function Header() {
 
   return (
     <>
+      {/* تم إحكام غلق خاصية الـ fixed وتأكيد الاتجاهات لجعل الـ Navbar ثابتاً تماماً */}
       <nav
         role="navigation"
         aria-label="Main navigation"
-        className="w-full shadow-md px-4 sm:px-8 lg:px-28 py-3 flex items-center justify-between fixed top-0 z-50 left-0 right-0 bg-white"
+        className="w-full fixed top-0 left-0 right-0 z-50 bg-white shadow-md px-4 sm:px-8 lg:px-28 py-3 flex items-center justify-between"
       >
         <div className="flex items-center">
           <Link to="/" aria-label="Learn Smart - Go to homepage">
