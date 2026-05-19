@@ -367,11 +367,13 @@ export default function Header() {
 
   return (
     <>
-      {/* تم إحكام غلق خاصية الـ fixed وتأكيد الاتجاهات لجعل الـ Navbar ثابتاً تماماً */}
+      {/* 1. تم إضافة bg-white/95 و backdrop-blur-md ليعطي شكلاً شفافاً واحترافياً للهيدر عند النزول.
+        2. الـ h-20 يضمن ثبات الطول على جميع الشاشات.
+      */}
       <nav
         role="navigation"
         aria-label="Main navigation"
-        className="w-full fixed top-0 left-0 right-0 z-50 bg-white shadow-md px-4 sm:px-8 lg:px-28 py-3 flex items-center justify-between"
+        className="w-full fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-sm h-20 px-4 sm:px-8 lg:px-28 flex items-center justify-between"
       >
         <div className="flex items-center">
           <Link to="/" aria-label="Learn Smart - Go to homepage">
@@ -457,6 +459,12 @@ export default function Header() {
           </button>
         </div>
       </nav>
+
+      {/* 💡 الحل الجذري التلقائي:
+        هذا الـ Div الوهمي يحجز مساحة بارتفاع h-20 (نفس ارتفاع الهيدر تماماً)
+        وبالتالي سيدفع محتوى أي صفحة لتبدأ من بعد الهيدر مباشرة دون تعديل كود كل صفحة يدوياً!
+      */}
+      <div className="h-20 w-full" />
 
       {/* Mobile sidebar */}
       <div
