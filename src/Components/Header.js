@@ -30,7 +30,7 @@ const NavLinks = ({
     : setDesktopDropdownOpen;
   const dropdownRef = isMobile ? mobileDropdownRef : desktopDropdownRef;
   const { user } = useAuth();
-  
+
   return (
     <ul
       className={`${
@@ -367,12 +367,16 @@ export default function Header() {
 
   return (
     <>
-      {/* 1. تم إضافة bg-white/95 و backdrop-blur-md ليعطي شكلاً شفافاً واحترافياً للهيدر عند النزول.
-        2. الـ h-20 يضمن ثبات الطول على جميع الشاشات.
-      */}
+      {/* ✅ التعديل الوحيد: إضافة style مع translateZ(0) لإصلاح مشكلة iOS Safari */}
       <nav
         role="navigation"
         aria-label="Main navigation"
+        style={{
+          WebkitTransform: "translateZ(0)",
+          transform: "translateZ(0)",
+          WebkitBackfaceVisibility: "hidden",
+          backfaceVisibility: "hidden",
+        }}
         className="w-full fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-sm h-20 px-4 sm:px-8 lg:px-28 flex items-center justify-between"
       >
         <div className="flex items-center">
@@ -460,10 +464,7 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* 💡 الحل الجذري التلقائي:
-        هذا الـ Div الوهمي يحجز مساحة بارتفاع h-20 (نفس ارتفاع الهيدر تماماً)
-        وبالتالي سيدفع محتوى أي صفحة لتبدأ من بعد الهيدر مباشرة دون تعديل كود كل صفحة يدوياً!
-      */}
+      {/* Spacer بنفس ارتفاع الهيدر */}
       <div className="h-20 w-full" />
 
       {/* Mobile sidebar */}
