@@ -15,7 +15,7 @@ export default function Books({
   moreBooks = false,
   data = null,
   showGradeHeader = false,
-  searchQuery = "", // 💡 إضافة prop البحث لربط المكون بالـ Hero أو الـ Searchbar
+  searchQuery = "", 
 }) {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,14 +38,11 @@ export default function Books({
     }
   }, [data]);
 
-  // 1. تحديد المصدر الأساسي للبيانات (سواء Prop خارجي أو جلب من الـ API)
   const baseBooks = data ? data : books;
 
-  // 2. 💡 التصفية الذكية بناءً على نص البحث (البحث في العنوان أو الوصف)
   const filteredBooks = baseBooks.filter((book) => {
     if (!book) return false;
-    if (!searchQuery.trim()) return true; // إذا كان البحث فارغاً، تعرض الكتب كاملة
-
+    if (!searchQuery.trim()) return true; 
     const targetTitle = book.title || "";
     const targetDesc = book.description || "";
 
@@ -55,10 +52,8 @@ export default function Books({
     );
   });
 
-  // 3. تحديد الكمية المراد عرضها (عرض الكل أو أول 8 عناصر فقط في الرئيسة)
   const finalBooks = moreBooks || data ? filteredBooks : filteredBooks.slice(0, 8);
 
-  // حالة التحميل (Skeleton Loader)
   if (loading) {
     return (
       <section className="bg-white py-16 px-4">
@@ -95,7 +90,6 @@ export default function Books({
     <section className="bg-white py-20 px-4 mb-10">
       <div className="max-w-7xl mx-auto w-full">
         
-        {/* العناوين الرئيسية */}
         {!data && (
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
@@ -110,20 +104,17 @@ export default function Books({
           </div>
         )}
 
-        {/* 💡 التعامل مع حالة عدم وجود نتائج مطابقة للبحث */}
         {filteredBooks.length === 0 ? (
           <div className="text-center py-16 text-gray-400 text-sm">
             No books found matching "{searchQuery}"
           </div>
         ) : (
-          /* شبكة عرض الكتب المفلترة */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {finalBooks.map((book) => (
               <div
                 key={book.id}
                 className="bg-white rounded-[2rem] shadow-md border border-gray-100 overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.02] w-full"
               >
-                {/* غلاف الكتاب وقراءة الـ PDF */}
                 <div
                   className="w-full h-[380px] overflow-hidden cursor-pointer relative group"
                   onClick={() => window.open(book.pdfUrl, "_blank")}
@@ -144,7 +135,6 @@ export default function Books({
                   </div>
                 </div>
 
-                {/* تفاصيل الكتاب */}
                 <div className="p-6 text-center flex flex-col flex-grow">
                   <h3 className="text-[17px] font-bold text-gray-800 mb-1 leading-tight line-clamp-1">
                     {book.title}
@@ -169,7 +159,6 @@ export default function Books({
           </div>
         )}
 
-        {/* زر عرض المزيد من الكتب */}
         {!moreBooks && !data && filteredBooks.length > 0 && (
           <div className="flex justify-center mt-12">
             <button

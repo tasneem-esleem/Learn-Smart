@@ -30,19 +30,17 @@ const topics = [
   ];
 export default function BrowseTopics() {
   return (
-  <section className="py-20 bg-white overflow-hidden"> {/* إيقاف السكرول الأفقي هنا */}
+  <section className="py-20 bg-white overflow-hidden"> 
       
       <h2 className="text-[#38B793] text-2xl md:text-3xl font-bold text-center mb-24 px-4">
         Browse The Topics
       </h2>
 
-      {/* الحاوية: px-4 تضمن وجود مساحة على أطراف الموبايل */}
       <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-y-28 gap-x-10 w-full max-w-6xl mx-auto px-5">
         
         {topics.map((topic, index) => (
           <div key={index} className="relative group w-full flex justify-center">
             
-            {/* الأيقونة العلوية */}
             <div
               className={`absolute -top-12 left-1/2 -translate-x-1/2 z-20 w-24 h-24 rounded-full border-[3px] bg-white ${topic.borderColor} flex items-center justify-center shadow-sm transition-transform duration-500 group-hover:-translate-y-2`}
             >

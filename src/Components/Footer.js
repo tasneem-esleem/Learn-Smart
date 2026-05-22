@@ -24,25 +24,25 @@ export default function Footer() {
             <p className="text-gray-900 font-semibold text-sm mb-2">Menu</p>
             <Link to="/" className="text-black text-sm hover:text-teal-500 transition">Home</Link>
             <Link to="/about" className="text-black text-sm hover:text-teal-500 transition">About</Link>
-            <Link to="/destination" className="text-black text-sm hover:text-teal-500 transition">Destination</Link>
-            <Link to="/reviews" className="text-black text-sm hover:text-teal-500 transition">Reviews</Link>
-            <Link to="/community" className="text-black text-sm hover:text-teal-500 transition">Community</Link>
+            <Link to="" className="text-black text-sm hover:text-teal-500 transition">Destination</Link>
+            <Link to="" className="text-black text-sm hover:text-teal-500 transition">Reviews</Link>
+            <Link to="" className="text-black text-sm hover:text-teal-500 transition">Community</Link>
           </div>
 
           {/* Company */}
           <div className="flex flex-col gap-3 text-start mt-3 flex-1 min-w-[120px]">
             <p className="text-gray-900 font-semibold text-sm mb-2">Company</p>
             <Link to="/terms" className="text-black text-sm hover:text-teal-500 transition">Terms & Conditions</Link>
-            <Link to="/privacy" className="text-black text-sm hover:text-teal-500 transition">Privacy Policy</Link>
-            <Link to="/careers" className="text-black text-sm hover:text-teal-500 transition">Careers</Link>
+            <Link to="/privacy-security" className="text-black text-sm hover:text-teal-500 transition">Privacy Policy</Link>
+            <Link to="/contact" className="text-black text-sm hover:text-teal-500 transition">Careers</Link>
           </div>
 
           {/* Support */}
           <div className="flex flex-col gap-3 text-start mt-3 flex-1 min-w-[120px]">
             <p className="text-gray-900 font-semibold text-sm mb-2">Support</p>
             <Link to="/contact" className="text-black text-sm hover:text-teal-500 transition">Contact Us</Link>
-            <Link to="/faq" className="text-black text-sm hover:text-teal-500 transition">FAQ/Help</Link>
-            <Link to="/resources" className="text-black text-sm hover:text-teal-500 transition">Resources</Link>
+            <Link to="" className="text-black text-sm hover:text-teal-500 transition">FAQ/Help</Link>
+            <Link to="" className="text-black text-sm hover:text-teal-500 transition">Resources</Link>
           </div>
 
           {/* Contact Us */}

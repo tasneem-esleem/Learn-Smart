@@ -367,7 +367,6 @@ export default function Header() {
 
   return (
     <>
-      {/* ✅ التعديل الوحيد: إضافة style مع translateZ(0) لإصلاح مشكلة iOS Safari */}
       <nav
         role="navigation"
         aria-label="Main navigation"
@@ -464,7 +463,6 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* Spacer بنفس ارتفاع الهيدر */}
       <div className="h-20 w-full" />
 
       {/* Mobile sidebar */}

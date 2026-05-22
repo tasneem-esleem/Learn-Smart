@@ -126,14 +126,12 @@ export default function Messages() {
         </div>
       </main>
 
-      {/* 2. القسم الجانبي (Aside) - يتغير عرضه حسب الحالة */}
       <aside 
         className={`bg-white h-screen sticky top-0 shadow-xl z-20 flex flex-col transition-all duration-500 ${
           activeChat ? 'w-[450px]' : 'w-fit lg:w-72'
         }`}
       >
         {activeChat ? (
-          /* واجهة الشات التفصيلية */
           <div className="flex flex-col h-full bg-white rounded-l-[40px] overflow-hidden" dir="ltr">
             {/* Header */}
             <div className="p-6 flex items-center justify-between border-b border-gray-50">
@@ -189,7 +187,6 @@ export default function Messages() {
             </div>
           </div>
         ) : (
-          /* واجهة البروفايل الجانبية */
           <div className="pt-24 px-2 lg:px-4 h-full overflow-y-auto" dir="ltr">
             <Profilesidebar />
           </div>

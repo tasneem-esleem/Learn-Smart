@@ -112,7 +112,6 @@ export default function Login() {
             </Link>
           </div>
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          {/* زر Login — غيّره */}
           <button
             className="w-full bg-[#38B793] hover:bg-teal-600 transition text-white font-medium py-3 rounded-full mt-9 disabled:opacity-50"
             onClick={handleLogin}

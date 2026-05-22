@@ -38,7 +38,6 @@ export default function TeacherProfile() {
             <p className="text-gray-500 text-lg mb-1">{teacher.phone || "+972 000 0000"}</p>
             <p className="text-gray-400 text-lg mb-3">{teacher.email || "email@example.com"}</p>
             
-            {/* النجوم */}
             <div className="flex gap-1 justify-center md:justify-start">
               {[...Array(5)].map((_, i) => (
                 <AiFillStar 
@@ -50,7 +49,6 @@ export default function TeacherProfile() {
           </div>
         </div>
 
-        {/* النص الطويل (الوصف) */}
         <div className="space-y-6 text-[#4a4a4a] text-base md:text-[17px] leading-[1.8] text-justify">
           <p>{teacher.longDescPart1}</p>
           <p>{teacher.longDescPart2}</p>

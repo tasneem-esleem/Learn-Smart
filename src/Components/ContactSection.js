@@ -4,28 +4,6 @@ import { useNavigate } from 'react-router-dom';
 export default function ContactSection() {
    const navigate = useNavigate();
   return (
-    // <section className="py-24 bg-white font-sans">
-    //   <div className="container mx-auto px-4 text-center">
-        
-    //     <h2 className="text-[#38B793] text-2xl md:text-3xl font-bold mb-4 tracking-tight">
-    //       Didnt find any answer to your question ?
-    //     </h2>
-
-    //     <p className="text-[#767676] text-sm md:text-base font-light mb-10">
-    //       Get in touch with us for details additional service
-    //     </p>
-
-        
-    //     <button className="bg-[#38B793] hover:bg-[#36967c] text-white font-bold py-2 px-20 rounded-full text-xl shadow-sm transition-all duration-300 transform hover:scale-105" 
-    //     onClick={()=> navigate('/contact')}
-    //     >
-    //       Contact Us
-    //     </button>
-
-    //   </div>
-    // </section>
-
-
     
 <section className="py-16 md:py-24 bg-white font-sans px-4">
   <div className="container mx-auto text-center">
