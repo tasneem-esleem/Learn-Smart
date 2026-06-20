@@ -1,11 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { IoArrowBack } from 'react-icons/io5'
+import axios from 'axios'
 
+const api = axios.create({
+  baseURL: 'https://educational-platform-backend-935l.onrender.com',
+});
 export default function OTP() {
   const [otp, setOtp] = useState(['', '', '', '', ''])
   const [timer, setTimer] = useState(59)
   const inputsRef = useRef([])
+  const location = useLocation()
+  const email = location.state?.email || '';
   const navigate = useNavigate()
 
   // Timer countdown
@@ -24,7 +30,6 @@ export default function OTP() {
     newOtp[index] = value
     setOtp(newOtp)
 
-    // Auto focus next input
     if (value && index < 4) {
       inputsRef.current[index + 1].focus()
     }
@@ -38,17 +43,34 @@ export default function OTP() {
   }
 
   // Resend code
-  const handleResend = () => {
-    setOtp(['', '', '', '', ''])
-    setTimer(59)
-    inputsRef.current[0].focus()
+  const handleResend = async () => {
+    try {
+await api.post('/api/auth/resend-otp', { email });      
+      setOtp(['', '', '', '', '']);
+      setTimer(59);
+      inputsRef.current[0].focus();
+    } catch (error) {
+      alert("فشل إعادة إرسال الكود، حاول مجدداً");
+    }
   }
 
   // Verify
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const code = otp.join('')
-    if (code.length === 5) {
-      navigate('/ResetPassword')
+    if (code.length !== 5) {
+      alert("الرجاء إدخال الكود المكون من 5 أرقام");
+      return;
+    }
+
+    try {
+      const response = await api.post('/api/auth/verify-otp', { email, otp: code });
+
+      if (response.status === 200) {
+        navigate('/reset-password', { state: { email } });
+      }
+    } catch (error) {
+      alert("الكود غير صحيح أو انتهت صلاحيته");
+      console.error("Verification error:", error);
     }
   }
 
@@ -56,7 +78,6 @@ export default function OTP() {
     <div className="min-h-screen flex items-center justify-center bg-white px-4 sm:px-6 md:px-8 relative">
       <div className="w-full max-w-sm sm:max-w-md md:max-w-lg py-10 sm:py-12 md:py-16">
 
-        {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
           className="text-gray-500 hover:text-gray-700 transition mb-6 sm:mb-8 absolute left-0"
@@ -64,7 +85,6 @@ export default function OTP() {
           <IoArrowBack size={20} />
         </button>
 
-        {/* Title */}
         <div className="text-center mb-8 sm:mb-10">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
             OTP Authentication
@@ -74,7 +94,6 @@ export default function OTP() {
           </p>
         </div>
 
-        {/* OTP Inputs */}
         <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 mb-6">
           {otp.map((digit, index) => (
             <input
@@ -90,12 +109,10 @@ export default function OTP() {
           ))}
         </div>
 
-        {/* Timer */}
         <p className="text-center text-gray-400 text-sm sm:text-base mb-2">
           00:{timer < 10 ? `0${timer}` : timer}
         </p>
 
-        {/* Resend */}
         <p className="text-center text-gray-400 text-sm sm:text-base mb-6 sm:mb-8">
           Dont send any code?{' '}
           {timer === 0 ? (
@@ -112,7 +129,6 @@ export default function OTP() {
           )}
         </p>
 
-        {/* Verify Button */}
         <button
           onClick={handleVerify}
           className="w-full bg-[#38B793] hover:bg-teal-600 transition text-white font-medium py-2 sm:py-3 rounded-full text-sm sm:text-base"

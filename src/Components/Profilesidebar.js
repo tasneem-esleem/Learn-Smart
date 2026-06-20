@@ -6,7 +6,7 @@ import { TiMessages } from "react-icons/ti";
 import { GrLogout } from "react-icons/gr";
 import { HiOutlineClipboardDocument } from "react-icons/hi2";
 import { FiSettings } from 'react-icons/fi';
-import {useAuth} from "../Context/AuthContext"
+import { useAuth } from "../Context/UserContext";
 import { UserContext } from '../Context/UserContext';
 
 const menuItems = [
@@ -22,8 +22,6 @@ export default function Profilesidebar() {
   const navigate = useNavigate();
   const {logout} = useAuth();
   const handleLogout = () => {
-    localStorage.removeItem("userToken");
-    localStorage.removeItem("user");
     logout();
     navigate('/', { replace: true })
   }

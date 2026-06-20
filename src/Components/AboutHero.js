@@ -3,7 +3,7 @@ import Students from "../image/Rectangle-99.png"
 export default function AboutHero() {
   return (
   <section 
-  className="relative min-h-[450px] md:min-h-[450px] w-full flex items-center justify-center overflow-hidden font-sans bg-no-repeat bg-cover mt-[80px]"
+  className="relative min-h-[450px] md:min-h-[450px] w-full flex items-center justify-center overflow-hidden font-sans bg-no-repeat bg-cover "
   style={{ backgroundImage: `url(${Students})` , backgroundPosition: "top"  }}
 >
   <div className="absolute inset-0 bg-black/60 z-10"></div>

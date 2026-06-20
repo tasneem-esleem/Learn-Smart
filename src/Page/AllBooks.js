@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import Books, { GradeHeader } from '../Components/Books'
+import React, { useEffect, useState } from "react";
+import Books, { GradeHeader } from "../Components/Books";
 
 export default function AllBooks() {
   const [allData, setAllData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("https://api-zyzn.onrender.com/api/books")
-      .then(res => res.json())
-      .then(data => {
+    fetch("https://educational-platform-backend-935l.onrender.com/api/books")
+      .then((res) => res.json())
+      .then((data) => {
         setAllData(data);
         setLoading(false);
       })
@@ -33,44 +33,39 @@ export default function AllBooks() {
         <div className="flex justify-center mb-16 animate-pulse">
           <div className="h-10 w-2/3 md:w-1/3 bg-gray-200 rounded-lg"></div>
         </div>
-        
+
         {[1, 2].map((section) => (
           <div key={section} className="mb-10">
-             <div className="max-w-7xl mx-auto px-10 mb-10 h-6 bg-gray-100 rounded w-1/4 animate-pulse"></div>
-             <BooksSkeleton />
+            <div className="max-w-7xl mx-auto px-10 mb-10 h-6 bg-gray-100 rounded w-1/4 animate-pulse"></div>
+            <BooksSkeleton />
           </div>
         ))}
       </div>
     );
   }
 
-  return ( 
-    <div className='pt-20'>
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-10">
-          Explore Books for Every Subject
-        </h2>
-          
-        <Books data={allData.slice(0, 8)} moreBooks={true} showGradeHeader={true}/>
+  // ✅ تجميع الكتب حسب الحقل grade
+  const groupedBooks = allData.reduce((acc, book) => {
+    const grade = book.grade || "Unknown";
+    if (!acc[grade]) acc[grade] = [];
+    acc[grade].push(book);
+    return acc;
+  }, {});
 
-        <GradeHeader title="Second year of secondary school (Literary)"/>
-        <div className="-mt-20">
-          <Books data={allData.slice(8, 12)} moreBooks={true} />
-        </div>
+  return (
+    <div className="pt-20">
+      <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-10">
+        Explore Books for Every Subject
+      </h2>
 
-        <GradeHeader title="Second year of secondary school (Scientific)"/>
-        <div className='-mt-20'>
-          <Books data={allData.slice(12, 16)} moreBooks={true} />
+      {Object.keys(groupedBooks).map((grade) => (
+        <div key={grade} className="mb-10">
+          <GradeHeader title={grade} />
+          <div className="-mt-20">
+            <Books data={groupedBooks[grade]} moreBooks={true} showGradeHeader={true} />
+          </div>
         </div>
-
-        <GradeHeader title="Third year of secondary school (Literary)"/>
-        <div className='-mt-20'>
-          <Books data={allData.slice(16, 20)} moreBooks={true} />
-        </div>
-
-        <GradeHeader title="Third year of secondary school (Scientific)"/>
-        <div className='-mt-20'>
-          <Books data={allData.slice(20, 24)} moreBooks={true} />
-        </div>
+      ))}
     </div>
-  )
+  );
 }

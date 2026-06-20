@@ -1,193 +1,249 @@
 import React, { useState, useEffect } from "react";
-import {
-  IoSearchOutline,
-  IoAdd,
-  IoCheckmarkDoneOutline,
-  IoArrowBack,
-  IoCallOutline,
-  IoVideocamOutline,
-  IoEllipsisVertical,
-  IoMicOutline,
-  IoLinkOutline,
-  IoSendOutline,
-} from "react-icons/io5";
+import { IoSearchOutline, IoAddCircle } from "react-icons/io5";
 import Profilesidebar from "./Profilesidebar";
+import ChatPanel from "./ChatPanel";
+
+function decodeToken(token) {
+  try {
+    const payload = token.split(".")[1];
+    const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(atob(normalized));
+  } catch (err) {
+    return null;
+  }
+}
+
+function normaliseConversation(item) {
+  if (item.contact) {
+    return {
+      chatId: item.chatId || item.contact._id,
+      name: item.contact.name || "Unknown",
+      avatar: item.contact.avatar || null,
+      lastMessage: item.lastMessage || "",
+      unread: item.unreadCount || 0,
+      time: item.updatedAt || item.createdAt || null,
+    };
+  }
+  return {
+    chatId: item._id,
+    name: item.name || "Unknown",
+    avatar: item.avatar || null,
+    lastMessage: "",
+    unread: 0,
+    time: null,
+  };
+}
+
+function formatRelativeTime(iso) {
+  if (!iso) return "";
+  const date = new Date(iso);
+  const now = new Date();
+  const diffDays = Math.floor((now - date) / 86400000);
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "yesterday";
+  return date.toLocaleDateString([], { day: "numeric", month: "numeric", year: "numeric" });
+}
+
+const BASE_URL = "https://educational-platform-backend-935l.onrender.com/api/messages";
 
 export default function Messages() {
   const [conversations, setConversations] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState(null);
   const [activeChat, setActiveChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const API_URL = "https://api-zyzn.onrender.com/api/messages";
   const token = localStorage.getItem("userToken");
+  const decoded = token ? decodeToken(token) : null;
+  const currentUserId = decoded?.id;
 
+  // ── Fetch conversations ──
   useEffect(() => {
-    fetch(API_URL, {
+    if (!token) { setLoading(false); return; }
+    fetch(`${BASE_URL}/conversations`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then((data) => {
-        const list = Array.isArray(data) ? data : data.messages || [];
-        setConversations(list);
+        const raw = data.conversations || data.data?.conversations || [];
+        setConversations(raw.map(normaliseConversation));
         setLoading(false);
       })
-      .catch((err) => {
-        console.error("Error fetching conversations:", err);
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   }, [token]);
 
-  const handleChatClick = (conv) => {
-    setActiveId(conv.chatId);
-    setActiveChat(conv);
-    fetch(`${API_URL}/${conv.chatId}`, {
+  useEffect(() => {
+    if (!token) return;
+    fetch(`${BASE_URL}/users`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then((data) => {
-        setMessages(Array.isArray(data) ? data : data.messages || []);
+        const raw = data.users || data.data?.users || [];
+        setAllUsers(raw.map(normaliseConversation));
+      })
+      .catch(() => {});
+  }, [token]);
+
+  const handleChatClick = (chat) => {
+    setActiveId(chat.chatId);
+    setActiveChat(chat);
+    setMessages([]);
+
+    fetch(`${BASE_URL}/${chat.chatId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const list = data.messages || data.data?.messages || [];
+        setMessages(list);
       })
       .catch((err) => console.error("Error fetching messages:", err));
   };
 
+  // ── Send a message ──
   const sendMessage = async () => {
-    if (!newMessage.trim() || !activeChat) return;
-
+    if (!newMessage.trim() || !activeId || sending) return;
+    setSending(true);
     try {
-      const response = await fetch(`${API_URL}/${activeChat.chatId}`, {
+      const response = await fetch(BASE_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ text: newMessage }),
+        body: JSON.stringify({ receiverId: activeId, content: newMessage }),
       });
-
+      const data = await response.json();
       if (response.ok) {
-        setMessages([
-          ...messages,
-          { text: newMessage, sender: "me", time: "Just now" },
-        ]);
-        setNewMessage(""); 
+        const sentMessage = data.message || data.data?.message;
+        if (sentMessage) setMessages((prev) => [...prev, sentMessage]);
+        setNewMessage("");
       }
     } catch (err) {
       console.error("Error sending message:", err);
+    } finally {
+      setSending(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-[#FDFDFD] flex flex-row-reverse items-stretch overflow-x-hidden" dir="rtl">
-      <main className="flex-1 h-screen overflow-y-auto border-l border-gray-50">
-        <div className="max-w-5xl mx-auto p-10 flex flex-col" dir="ltr">
-          <h1 className="text-4xl font-bold text-left text-black mb-10">All Messages</h1>
+  // ── Filter list by search query ──
+  const displayList = (conversations.length > 0 ? conversations : allUsers).filter((c) =>
+    c.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-          <div className="relative mb-12 w-full max-w-[600px]">
-            <IoSearchOutline className="absolute left-4 top-1/2 -translate-y-1/2 text-[#34b38a] size-6" />
+  return (
+    <div className="min-h-screen bg-[#FDFDFD] flex flex-row items-stretch overflow-x-hidden">
+
+      {/* ── Conversation List ── */}
+      <main className="flex-1 h-screen overflow-y-auto border-r border-gray-50">
+        <div className="max-w-2xl mx-auto p-8 flex flex-col">
+          <h1 className="text-3xl font-bold text-black mb-6">All Messages</h1>
+
+          {/* Search */}
+          <div className="relative mb-8">
+            <IoSearchOutline className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input
-              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Start typing to search"
-              className="w-full h-[48px] pl-14 pr-6 rounded-full border border-gray-100 outline-none shadow-sm focus:border-[#34b38a] transition-all"
+              className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-[#34b38a] transition-colors"
             />
           </div>
 
-          <h2 className="text-2xl font-semibold text-left text-gray-900 mb-6">Messages</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Messages</h2>
 
-          <div className="space-y-6">
+          {/* List */}
+          <div className="space-y-3">
             {loading ? (
-              <p className="text-center text-gray-400">Loading...</p>
+              <p className="text-center text-gray-400 py-10">Loading...</p>
+            ) : displayList.length === 0 ? (
+              <p className="text-center text-gray-400 py-10">No conversations found.</p>
             ) : (
-              conversations.map((conv) => (
+              displayList.map((chat) => (
                 <div
-                  key={conv.chatId}
-                  onClick={() => handleChatClick(conv)}
-                  className={`flex items-center p-4 bg-white rounded-[35px] shadow-[0_10px_40px_rgba(0,0,0,0.04)] cursor-pointer border-2 transition-all max-w-5xl ${
-                    activeId === conv.chatId ? "border-[#34b38a] bg-[#f0f9f6]" : "border-transparent"
+                  key={chat.chatId}
+                  onClick={() => handleChatClick(chat)}
+                  className={`flex items-center p-4 bg-white rounded-[25px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] cursor-pointer border-2 transition-all duration-200 ${
+                    activeId === chat.chatId
+                      ? "border-[#34b38a] bg-[#f1faf8]"
+                      : "border-transparent hover:border-[#34b38a]/40"
                   }`}
                 >
-                  <img
-                    src={conv.contact?.avatar}
-                    className="w-16 h-16 rounded-[20px] object-cover shrink-0"
-                    alt=""
-                  />
-                  <div className="ml-5 flex-1 text-left">
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-bold text-gray-900 text-lg">{conv.contact?.name}</h3>
-                      <span className="text-xs text-gray-400">{conv.lastTime || "6:00 pm"}</span>
+                  {/* Avatar */}
+                  <div className="relative flex-shrink-0">
+                    <div className="w-14 h-14 rounded-[16px] overflow-hidden bg-gray-100">
+                      {chat.avatar ? (
+                        <img
+                          src={chat.avatar}
+                          alt={chat.name}
+                          className="w-full h-full object-cover"
+                          style={{ background: "transparent" }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 font-bold text-lg">
+                          {chat.name?.[0]?.toUpperCase()}
+                        </div>
+                      )}
                     </div>
-                    <p className="text-sm text-gray-400 truncate w-48">{conv.lastMessage}</p>
+                    <span className="absolute bottom-0.5 right-0.5 w-3 h-3 bg-[#34b38a] rounded-full border-2 border-white" />
+                  </div>
+
+                  {/* Info */}
+                  <div className="ml-4 flex-1 min-w-0 text-left">
+                    <h3 className="font-bold text-gray-900 text-sm">{chat.name}</h3>
+                    <p className="text-xs text-gray-400 truncate">{chat.lastMessage || "Start a conversation"}</p>
+                  </div>
+
+                  {/* Time + Unread */}
+                  <div className="ml-2 flex flex-col items-end gap-1 flex-shrink-0">
+                    <span className={`text-xs ${chat.unread ? "text-[#34b38a] font-semibold" : "text-gray-400"}`}>
+                      {formatRelativeTime(chat.time)}
+                    </span>
+                    {chat.unread > 0 && (
+                      <span className="w-5 h-5 bg-[#34b38a] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {chat.unread}
+                      </span>
+                    )}
                   </div>
                 </div>
               ))
             )}
           </div>
+
+          {/* FAB */}
+          <button
+            className="fixed bottom-8 left-[340px] w-12 h-12 bg-[#34b38a] rounded-full flex items-center justify-center shadow-lg hover:bg-[#2a9070] transition-colors z-30"
+            title="New message"
+          >
+            <IoAddCircle size={28} className="text-white" />
+          </button>
         </div>
       </main>
 
-      <aside 
+      {/* ── Right Sidebar: Chat Panel or Profile Sidebar ── */}
+      <aside
         className={`bg-white h-screen sticky top-0 shadow-xl z-20 flex flex-col transition-all duration-500 ${
-          activeChat ? 'w-[450px]' : 'w-fit lg:w-72'
+          activeChat ? "w-[420px]" : "w-fit lg:w-72"
         }`}
       >
         {activeChat ? (
-          <div className="flex flex-col h-full bg-white rounded-l-[40px] overflow-hidden" dir="ltr">
-            {/* Header */}
-            <div className="p-6 flex items-center justify-between border-b border-gray-50">
-              <div className="flex items-center gap-4">
-                <button onClick={() => { setActiveChat(null); setActiveId(null); }} className="text-gray-400 hover:text-black">
-                  <IoArrowBack size={24} />
-                </button>
-                <div>
-                  <h4 className="font-bold text-gray-900">{activeChat.contact?.name}</h4>
-                  <p className="text-xs text-[#34b38a]">Online</p>
-                </div>
-              </div>
-              <div className="flex gap-4 text-gray-500">
-                <IoCallOutline size={22} className="cursor-pointer hover:text-black" />
-                <IoVideocamOutline size={22} className="cursor-pointer hover:text-black" />
-                <IoEllipsisVertical size={22} className="cursor-pointer hover:text-black" />
-              </div>
-            </div>
-
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#FAFAFA]">
-              <p className="text-center text-xs text-gray-400 my-4">Today</p>
-              
-              {messages.map((m, idx) => (
-                <div key={idx} className={`flex flex-col ${m.sender === "me" ? "items-end" : "items-start"}`}>
-                  <div className={`${m.sender === "me" ? "bg-[#999]" : "bg-[#34b38a]"} text-white p-4 rounded-2xl ${m.sender === 'me' ? 'rounded-tr-none' : 'rounded-tl-none'} shadow-sm max-w-[85%]`}>
-                    <p className="text-sm font-medium">{m.text}</p>
-                    <span className="text-[10px] opacity-70 block text-right mt-1">{m.time || "Now"}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Input Area */}
-            <div className="p-6 bg-white border-t border-gray-50">
-              <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-full border border-gray-100">
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                  placeholder="Type your message"
-                  className="flex-1 bg-transparent outline-none px-4 text-sm"
-                />
-                <div className="flex items-center gap-2 pr-2">
-                  <IoMicOutline className="text-gray-400 cursor-pointer" size={20} />
-                  <IoLinkOutline className="text-gray-400 cursor-pointer" size={20} />
-                  <button onClick={sendMessage} className="bg-[#34b38a] text-white p-2 rounded-full shadow-md hover:bg-[#2da17c] transition-all">
-                    <IoSendOutline size={18} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <ChatPanel
+            activeChat={activeChat}
+            messages={messages}
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            sending={sending}
+            sendMessage={sendMessage}
+            currentUserId={currentUserId}
+            onClose={() => { setActiveChat(null); setActiveId(null); setMessages([]); }}
+          />
         ) : (
-          <div className="pt-24 px-2 lg:px-4 h-full overflow-y-auto" dir="ltr">
+          <div className="pt-24 px-4 h-full">
             <Profilesidebar />
           </div>
         )}

@@ -1,72 +1,61 @@
-
-import React, { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { IoArrowBack } from 'react-icons/io5'
-import { HiOutlineEyeOff, HiOutlineEye } from 'react-icons/hi'
-import { BsCheckCircleFill } from 'react-icons/bs'
-import chang from '../image/Group (2).png'
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { IoArrowBack } from "react-icons/io5";
+import { HiOutlineEyeOff, HiOutlineEye } from "react-icons/hi";
+import { BsCheckCircleFill } from "react-icons/bs";
+import chang from "../image/Group (2).png";
+import api from "../api"; 
 
 export default function ResetPassword() {
-  const [password, setPassword]                   = useState('')
-  const [confirmPassword, setConfirmPassword]     = useState('')
-  const [showPassword, setShowPassword]           = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [saved, setSaved]                         = useState(false)
-  const [loading, setLoading]                     = useState(false)
-  const [serverError, setServerError]             = useState('')
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
 
-  const navigate  = useNavigate()
-  const location  = useLocation()
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const email = location.state?.email || ''
+  const email = location.state?.email || "";
 
-  const isMatch    = password && confirmPassword && password === confirmPassword
-  const isNotMatch = password && confirmPassword && password !== confirmPassword
-
-  const handleSave = async () => {
-    if (!isMatch) return
-
-    if (password.length < 6) {
-      setServerError('Password must be at least 6 characters')
-      return
-    }
-
-    setLoading(true)
-    setServerError('')
-
-    try {
-      const res = await fetch('https://api-zyzn.onrender.com/api/auth/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          new_password: password,
-        }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setServerError(data.error || 'Something went wrong')
-        return
-      }
-
-      setSaved(true)
-
-    } catch (err) {
-      console.error('Reset password error:', err)
-      setServerError('Server is starting up, please wait 30 seconds and try again')
-    } finally {
-      setLoading(false)
-    }
+  if (!email) {
+    navigate("/forget-password");
+    return null;
   }
 
-  // ─── Password Changed Screen ──────────────────────────────────────────────
+  const isMatch = password && confirmPassword && password === confirmPassword;
+  const isNotMatch = password && confirmPassword && password !== confirmPassword;
+
+  const handleSave = async () => {
+    if (!isMatch) return;
+
+    if (password.length < 6) {
+      setServerError("Password must be at least 6 characters");
+      return;
+    }
+
+    setLoading(true);
+    setServerError("");
+
+    try {
+      await api.post("/auth/reset-password", { // ✅ بدل fetch
+        email,
+        newPassword: password,
+      });
+      setSaved(true);
+    } catch (err) {
+      setServerError(err.response?.data?.message || "Something went wrong"); // ✅ إصلاح رسالة الخطأ
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (saved) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white px-4">
         <div className="w-full max-w-sm py-12 flex flex-col items-center text-center">
-
           <div className="bg-teal-50 rounded-2xl p-8 mb-6">
             <div className="text-[#38B793] text-4xl w-20 h-20">
               <img src={chang} alt="chang" />
@@ -84,23 +73,19 @@ export default function ResetPassword() {
           <BsCheckCircleFill className="text-[#38B793] text-4xl mb-8" />
 
           <button
-            onClick={() => navigate('/login')}
+            onClick={() => navigate("/login")}
             className="w-full bg-[#38B793] hover:bg-teal-600 transition text-white font-medium py-2 rounded-xl mt-6"
           >
             Go to Login
           </button>
-
         </div>
       </div>
-    )
+    );
   }
 
-  // ─── Reset Password Screen ────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 relative">
       <div className="w-full max-w-sm py-12">
-
-        {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
           className="text-gray-500 hover:text-gray-700 transition mb-8 absolute left-10 top-8 text-start"
@@ -108,7 +93,6 @@ export default function ResetPassword() {
           <IoArrowBack size={20} />
         </button>
 
-        {/* Title */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-3">
             Reset password
@@ -120,7 +104,6 @@ export default function ResetPassword() {
           </p>
         </div>
 
-        {/* Server Error */}
         {serverError && (
           <div className="mb-4 px-5 py-3 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-sm font-medium">
             ❌ {serverError}
@@ -128,11 +111,9 @@ export default function ResetPassword() {
         )}
 
         <div className="flex flex-col gap-4">
-
-          {/* New Password */}
           <div className="relative">
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter new Password"
@@ -147,10 +128,9 @@ export default function ResetPassword() {
             </button>
           </div>
 
-          {/* Confirm Password */}
           <div className="relative">
             <input
-              type={showConfirmPassword ? 'text' : 'password'}
+              type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm new Password"
@@ -165,7 +145,6 @@ export default function ResetPassword() {
             </button>
           </div>
 
-          {/* Match Message */}
           {isMatch && (
             <p className="text-teal-500 text-xs px-2">✅ Both passwords are match</p>
           )}
@@ -173,21 +152,19 @@ export default function ResetPassword() {
             <p className="text-red-400 text-xs px-2">❌ Both passwords didn't match</p>
           )}
 
-          {/* Save Button */}
           <button
             onClick={handleSave}
             disabled={!isMatch || loading}
             className={`w-full transition text-white font-medium py-3 rounded-full mt-4 ${
               isMatch && !loading
-                ? 'bg-[#38B793] hover:bg-teal-600 cursor-pointer'
-                : 'bg-gray-300 cursor-not-allowed'
+                ? "bg-[#38B793] hover:bg-teal-600 cursor-pointer"
+                : "bg-gray-300 cursor-not-allowed"
             }`}
           >
-            {loading ? 'Saving...' : 'Save'}
+            {loading ? "Saving..." : "Save"}
           </button>
-
         </div>
       </div>
     </div>
-  )
+  );
 }

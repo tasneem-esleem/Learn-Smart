@@ -7,7 +7,7 @@ import Books from '../Components/Books'
 
 export default function Home() {
   return (
-    <div>
+    <div className='-mt-10'>
         <HomePageHero/>
         <StudyHome/>
         <TeachersHome/>

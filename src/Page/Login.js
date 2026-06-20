@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGoogle, FaFacebook } from "react-icons/fa";
-import { TfiApple } from "react-icons/tfi";
 import { HiOutlineEyeOff, HiOutlineEye } from "react-icons/hi";
 import welcome from "../image/Frame (4).png";
 import google from "../image/Group 26690.png";
 import { useAuth } from "../Context/UserContext";
+import api from "../api"; 
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -18,39 +18,36 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-  if (!email || !password) return;
-  setLoading(true);
-  setError("");
+    if (!email || !password) return;
 
-  try {
-    const res = await fetch("https://api-zyzn.onrender.com/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    setLoading(true);
+    setError("");
 
-    const data = await res.json();
+    try {
+      const res = await api.post("/auth/login", { email, password });
 
-    if (!res.ok) {
-      setError(data.error || "Invalid email or password");
-      return;
+      if (res?.token && res?.user) {
+        const { token, user } = res;
+
+        localStorage.setItem("userToken", token);
+        localStorage.setItem("user", JSON.stringify(user));
+        login(user, token);
+
+        window.dispatchEvent(new Event("authChange"));
+        navigate("/home");
+      } else {
+        setError("Login failed: Incomplete data received from server.");
+      }
+    } catch (err) {
+      setError(err.message || "Invalid email or password");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    localStorage.setItem("userToken", data.token);
-    login(data.user);
-    window.dispatchEvent(new Event("authChange"));
-    navigate("/home");
-
-  } catch (err) {
-    setError("Server error, try again");
-  } finally {
-    setLoading(false);
-  }
-};
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 sm:px-6 md:px-8">
       <div className="w-full max-w-md py-16 sm:py-20 md:py-24">
-        {/* Title */}
         <div className="text-center mb-8">
           <div className="flex flex-col sm:flex-row justify-center items-center gap-2">
             <h1 className="text-3xl sm:text-4xl md:text-[48px] font-bold text-gray-900 mb-2 text-center">
@@ -63,9 +60,7 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Form */}
         <div className="flex flex-col gap-4">
-          {/* Email Input */}
           <input
             type="email"
             value={email}
@@ -73,7 +68,6 @@ export default function Login() {
             placeholder="Enter your Email"
             className="w-full border border-gray-200 rounded-full px-5 py-3 text-sm sm:text-base text-gray-600 outline-none focus:border-teal-400 transition placeholder:text-gray-300"
           />
-          {/* Password Input */}
           <div className="relative">
             <input
               value={password}
@@ -93,7 +87,7 @@ export default function Login() {
               )}
             </button>
           </div>
-          {/* Remember me + Forget password */}
+
           <div className="flex items-center justify-between px-1">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -105,13 +99,15 @@ export default function Login() {
               <span className="text-sm text-gray-600">Remember me</span>
             </label>
             <Link
-              to="/reset-password"
+              to="/forget-password"
               className="text-sm text-teal-500 hover:text-teal-600 transition underline"
             >
               Forget password?
             </Link>
           </div>
+
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
           <button
             className="w-full bg-[#38B793] hover:bg-teal-600 transition text-white font-medium py-3 rounded-full mt-9 disabled:opacity-50"
             onClick={handleLogin}
@@ -120,24 +116,18 @@ export default function Login() {
             {loading ? "Logging in..." : "Login"}
           </button>
 
-          {/* Or */}
           <p className="text-center text-gray-400 text-sm">Or</p>
-          {/* Login With Google */}
-          <button className="w-full border border-gray-200 rounded-full py-3 text-sm sm:text-base text-gray-600 font-medium flex items-center justify-center gap-3 hover:bg-gray-50 transition">
-            <img src={google} alt="google" className="w-4 sm:w-5" />
-            Login With Google
+          <button
+            onClick={() =>
+              (window.location.href =
+                "https://educational-platform-backend-935l.onrender.com/api/auth/google")
+            }
+            className="w-full border border-gray-200 rounded-full py-3 text-sm sm:text-base text-gray-600 font-medium flex items-center justify-center gap-3 hover:bg-gray-50 transition"
+          >
+            <img src={google} alt="google" className="w-4 sm:w-5" /> Login With
+            Google
           </button>
-          {/* Login With Facebook */}
-          <button className="w-full border border-gray-200 rounded-full py-3 text-sm sm:text-base text-gray-600 font-medium flex items-center justify-center gap-3 hover:bg-gray-50 transition">
-            <FaFacebook className="text-blue-600" size={16} />
-            Login With Facebook
-          </button>
-          {/* Login With Apple */}
-          <button className="w-full border border-gray-200 rounded-full py-3 text-sm sm:text-base text-gray-600 font-medium flex items-center justify-center gap-3 hover:bg-gray-50 transition -ml-3">
-            <TfiApple size={16} />
-            Login With Apple
-          </button>
-          {/* Register Link */}
+
           <p className="text-center text-sm sm:text-base text-gray-500 mt-2">
             Dont have an account ?{" "}
             <Link

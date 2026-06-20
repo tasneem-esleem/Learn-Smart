@@ -36,32 +36,36 @@ import MessagesPage from "./Page/MessagesPage";
 import {UserProvider} from './Context/UserContext'
 import SubjectDetails from './Page/SubjectDetails'
 import ProtectedRoute from './Components/ProtectedRoute'
+import OAuthCallback from './Page/OAuthCallback';
+
+
 function Layout() {
   return (
-    <>
+    <div >
       <Header />
-      <main className="min-h-[80vh]">
-      <Outlet />
-      </main>
-      <Footer />
-    </>
-  );
-}
-function LayoutNoFooter() {
-  return(
-    <>
-    <Header/>
-    <main className="min-h-screen pt-20">
+      <main >
         <Outlet />
       </main>
-    </>
+      <Footer />
+    </div>
+  );
+}
+
+function LayoutNoFooter() {
+  return(
+    <div >
+      <Header/>
+      <main >
+        <Outlet />
+      </main>
+    </div>
   )
 }
+
 function App() {
   return (
-     <UserProvider>
-    <div className="App">
-   
+    <UserProvider>
+      <div className="App">
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Desktop />} />
@@ -89,42 +93,39 @@ function App() {
           </Route>
           
           <Route element={<LayoutNoFooter/>}>
-              <Route path="/Search" element={<Search/>} />
-              <Route path="/Profile" element={<Profile/>} />
-              <Route path="/quizzes" element={<QuizzesPage/>} />
-              <Route path="/settings" element={<SettingsPage/>} />
-              <Route path="/assignment" element={<AssignmentsPage/>} />
-              <Route path="/messages" element={<MessagesPage/>} />
-              <Route path="/privacy-security" element={<PrivacyAndSecurity/>} />
-              <Route path="/help-security" element={<HelpSupportPage/>} />
-              <Route path="/terms-of-use" element={<TermsOfUse/>} />
-              <Route path="/send-feedback" element={<FeedbackPage/>} />
-              <Route path="/teacher/:id" element={<TeacherProfile/>} />
-              <Route path="/all-books" element={<AllBooks/>} />
-              <Route path="/book/:id" element={<BookDetails/>} />
-              <Route path="/notifications" element={<NotificationsPage/>} />
-              <Route  path="/subject/:bookId/:subjectName" element={
-                <ProtectedRoute>
-                  <SubjectDetails />
-                </ProtectedRoute>
-              } />
+            <Route path="/search" element={<Search/>} />
+            <Route path="/profile" element={<Profile/>} />
+            <Route path="/quizzes" element={<QuizzesPage/>} />
+            <Route path="/settings" element={<SettingsPage/>} />
+            <Route path="/assignment" element={<AssignmentsPage/>} />
+            <Route path="/messages" element={<MessagesPage/>} />
+            <Route path="/privacy-security" element={<PrivacyAndSecurity/>} />
+            <Route path="/help-security" element={<HelpSupportPage/>} />
+            <Route path="/terms-of-use" element={<TermsOfUse/>} />
+            <Route path="/send-feedback" element={<FeedbackPage/>} />
+            <Route path="/teacher/:id" element={<TeacherProfile/>} />
+            <Route path="/all-books" element={<AllBooks/>} />
+            <Route path="/book/:id" element={<BookDetails/>} />
+            <Route path="/notifications" element={<NotificationsPage/>} />
+            <Route path="/subject/:bookId/:subjectName" element={
+              <ProtectedRoute>
+                <SubjectDetails />
+              </ProtectedRoute>
+            } />
           </Route>
 
-
           <Route path="/login" element={<Login />} />
+          <Route path="/oauth-callback" element={<OAuthCallback />} />
+
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/register" element={<Register />} />
           <Route path="/otp" element={<OTP />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/terms" element={<Terms/>} />
         </Routes>
-  
-    </div>
-     </UserProvider>
+      </div>
+    </UserProvider>
   );
 }
+
 export default App;
-
-
-
-

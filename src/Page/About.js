@@ -7,7 +7,7 @@ import WhyChooseUs from "../Components/WhyChooseUs";
 
 export default function About () {
   return (
-    <div>
+    <div className="">
       <AboutHero />
       <AboutWelcome />
       <MissionVision/>

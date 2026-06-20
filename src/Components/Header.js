@@ -258,10 +258,14 @@ const NavLinks = ({
               <Link to="/profile" aria-label="Go to profile">
                 <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200">
                   <img
-                    src={user?.avatar || "/user-avatar.jpg"}
+                    src={user?.avatar ? user.avatar : "/user-avatar.jpg"}
                     alt={user?.name || "User profile picture"}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center"
                     loading="lazy"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/user-avatar.jpg";
+                    }}
                   />
                 </div>
               </Link>
@@ -428,11 +432,15 @@ export default function Header() {
                 <Link to="/profile" aria-label="Go to profile">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-gray-200 cursor-pointer">
                     <img
-                      src={user?.avatar || "/user-avatar.jpg"}
-                      alt={user?.name || "User profile picture"}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
+  src={user?.avatar ? user.avatar : "/user-avatar.jpg"}
+  alt={user?.name || "User profile picture"}
+  className="w-full h-full object-cover object-center"
+  loading="lazy"
+  onError={(e) => {
+    e.target.onerror = null;
+    e.target.src = "/user-avatar.jpg";
+  }}
+/>
                   </div>
                 </Link>
               </div>

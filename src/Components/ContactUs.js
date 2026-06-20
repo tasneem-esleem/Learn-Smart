@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import mail from "../image/Vector (5).png"
-import website from "../image/Vector (6).png"
-import call from "../image/Vector (7).png"
+import React, { useState } from "react";
+import mail from "../image/Vector (5).png";
+import website from "../image/Vector (6).png";
+import call from "../image/Vector (7).png";
 
-const API_BASE = "https://api-zyzn.onrender.com";
+const API_BASE = "https://educational-platform-backend-935l.onrender.com";
 
 const INITIAL_FORM = {
   fullName: "",
@@ -14,19 +14,16 @@ const INITIAL_FORM = {
 
 function validate(form) {
   const errors = {};
-  if (!form.fullName.trim())
-    errors.fullName = "Full name is required";
-  if (!form.email.trim())
-    errors.email = "Email is required";
+  if (!form.fullName.trim()) errors.fullName = "Full name is required";
+  if (!form.email.trim()) errors.email = "Email is required";
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
     errors.email = "Please enter a valid email";
-  if (!form.message.trim())
-    errors.message = "Message is required";
+  if (!form.message.trim()) errors.message = "Message is required";
   return errors;
 }
 
 export default function ContactUs() {
-  const [form, setForm]     = useState(INITIAL_FORM);
+  const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle");
 
@@ -54,10 +51,10 @@ export default function ContactUs() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          full_name: form.fullName,
-          email:     form.email,
-          phone:     form.phone,
-          message:   form.message,
+          name: form.fullName,
+          email: form.email,
+          phone: form.phone,
+          message: form.message,
         }),
       });
 
@@ -77,43 +74,66 @@ export default function ContactUs() {
   };
 
   return (
-    <section className="py-36 px-6 bg-white font-sans">
+    <section className="py-16 px-6 bg-white font-sans">
       <div className="max-w-full bg-[#38B7930D] rounded-[40px] p-8 md:p-16 flex flex-col lg:flex-row gap-16 lg:gap-24 shadow-sm">
-
         <div className="flex-1 text-start">
           <h2 className="text-4xl font-semibold text-black mb-4">Contact Us</h2>
           <p className="text-gray-500 text-lg mb-12 leading-relaxed">
-            Contact us if you have any questions or need help.<br />
+            Contact us if you have any questions or need help.
+            <br />
             We are always here to support you
           </p>
 
           <div className="space-y-8">
             <div className="flex items-center gap-4 text-[#38B793]">
-              <img src={mail} loading="lazy" alt="Email icon" className="w-6 h-6 object-contain" />
-              <a href="mailto:LearnSmartplatform@gmail.com" className="text-lg font-medium hover:underline">
+              <img
+                src={mail}
+                loading="lazy"
+                alt="Email icon"
+                className="w-6 h-6 object-contain"
+              />
+              <a
+                href="mailto:LearnSmartplatform@gmail.com"
+                className="text-lg font-medium hover:underline"
+              >
                 LearnSmartplatform@gmail.com
               </a>
             </div>
 
             <div className="flex items-center gap-4 text-[#38B793]">
-              <img src={website} loading="lazy" alt="Website icon" className="w-6 h-6 object-contain" />
-              <a href="https://www.LearnSmart.com" target="_blank" rel="noreferrer" className="text-lg font-medium hover:underline">
+              <img
+                src={website}
+                loading="lazy"
+                alt="Website icon"
+                className="w-6 h-6 object-contain"
+              />
+              <a
+                href="https://www.LearnSmart.com"
+                target="_blank"
+                rel="noreferrer"
+                className="text-lg font-medium hover:underline"
+              >
                 www.LearnSmart.com
               </a>
             </div>
 
             <div className="flex items-center gap-4 text-[#38B793]">
-              <img src={call} alt="Phone icon" className="w-6 h-6 object-contain" loading="lazy" />
+              <img
+                src={call}
+                alt="Phone icon"
+                className="w-6 h-6 object-contain"
+                loading="lazy"
+              />
               <span className="text-lg font-medium">+99954839621</span>
             </div>
           </div>
         </div>
 
         <div className="flex-1 w-full">
-
           {status === "success" && (
             <div className="mb-6 px-5 py-4 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 text-sm font-medium">
-              ✅ Your message has been sent successfully! We will get back to you soon.
+              ✅ Your message has been sent successfully! We will get back to
+              you soon.
             </div>
           )}
 
@@ -124,7 +144,6 @@ export default function ContactUs() {
           )}
 
           <form onSubmit={handleSubmit} noValidate className="space-y-3">
-
             <div>
               <input
                 type="text"
@@ -137,7 +156,9 @@ export default function ContactUs() {
                 className={`w-full px-6 py-4 rounded-full border bg-transparent focus:outline-none transition-all placeholder:text-gray-400 ${errors.fullName ? "border-red-400 focus:border-red-400" : "border-gray-200 focus:border-[#38B793]"}`}
               />
               {errors.fullName && (
-                <p className="text-red-500 text-xs mt-1 ml-4">{errors.fullName}</p>
+                <p className="text-red-500 text-xs mt-1 ml-4">
+                  {errors.fullName}
+                </p>
               )}
             </div>
 
@@ -181,7 +202,9 @@ export default function ContactUs() {
                 className={`w-full px-6 py-5 rounded-[30px] border bg-transparent focus:outline-none transition-all placeholder:text-gray-400 resize-none ${errors.message ? "border-red-400 focus:border-red-400" : "border-gray-200 focus:border-[#38B793]"}`}
               />
               {errors.message && (
-                <p className="text-red-500 text-xs mt-1 ml-4">{errors.message}</p>
+                <p className="text-red-500 text-xs mt-1 ml-4">
+                  {errors.message}
+                </p>
               )}
             </div>
 
@@ -194,10 +217,8 @@ export default function ContactUs() {
                 {status === "loading" ? "Sending..." : "Submit"}
               </button>
             </div>
-
           </form>
         </div>
-
       </div>
     </section>
   );

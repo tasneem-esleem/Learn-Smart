@@ -15,7 +15,7 @@ export default function Books({
   moreBooks = false,
   data = null,
   showGradeHeader = false,
-  searchQuery = "", 
+  searchQuery = "",
 }) {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,10 +23,17 @@ export default function Books({
 
   useEffect(() => {
     if (!data) {
-      fetch("https://api-zyzn.onrender.com/api/books")
+      const token = localStorage.getItem("userToken");
+      fetch("https://educational-platform-backend-935l.onrender.com/api/books", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-cache",
+        },
+      })
         .then((res) => res.json())
         .then((data) => {
-          setBooks(data);
+          const booksList = Array.isArray(data) ? data : (data.books || data.data?.books || []);
+          setBooks(booksList);
           setLoading(false);
         })
         .catch((err) => {
@@ -42,7 +49,7 @@ export default function Books({
 
   const filteredBooks = baseBooks.filter((book) => {
     if (!book) return false;
-    if (!searchQuery.trim()) return true; 
+    if (!searchQuery.trim()) return true;
     const targetTitle = book.title || "";
     const targetDesc = book.description || "";
 
@@ -52,7 +59,8 @@ export default function Books({
     );
   });
 
-  const finalBooks = moreBooks || data ? filteredBooks : filteredBooks.slice(0, 8);
+  const finalBooks =
+    moreBooks || data ? filteredBooks : filteredBooks.slice(0, 8);
 
   if (loading) {
     return (
@@ -61,22 +69,12 @@ export default function Books({
           <div className="flex justify-center mb-12">
             <div className="h-10 w-64 bg-gray-200 animate-pulse rounded-lg"></div>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[1, 2, 3, 4].map((item) => (
-              <div
-                key={item}
-                className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden p-0 shadow-sm"
-              >
+              <div key={item} className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden p-0 shadow-sm">
                 <div className="w-full h-[380px] bg-gray-200 animate-pulse"></div>
                 <div className="p-6 space-y-4">
                   <div className="h-5 bg-gray-200 animate-pulse rounded w-3/4 mx-auto"></div>
-                  <div className="h-4 bg-gray-100 animate-pulse rounded w-1/2 mx-auto"></div>
-                  <div className="space-y-2">
-                    <div className="h-3 bg-gray-100 animate-pulse rounded w-full"></div>
-                    <div className="h-3 bg-gray-100 animate-pulse rounded w-5/6 mx-auto"></div>
-                  </div>
-                  <div className="h-10 bg-gray-200 animate-pulse rounded-full w-32 mx-auto mt-4"></div>
                 </div>
               </div>
             ))}
@@ -89,7 +87,6 @@ export default function Books({
   return (
     <section className="bg-white py-20 px-4 mb-10">
       <div className="max-w-7xl mx-auto w-full">
-        
         {!data && (
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
@@ -112,42 +109,48 @@ export default function Books({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {finalBooks.map((book) => (
               <div
-                key={book.id}
-                className="bg-white rounded-[2rem] shadow-md border border-gray-100 overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.02] w-full"
+                key={book._id}
+                onClick={() => navigate(`/book/${book.id}`)}
+                className="bg-white rounded-[2rem] shadow-md border border-gray-100 overflow-hidden flex flex-col transition-transform duration-300 hover:scale-[1.02] w-full cursor-pointer"
               >
                 <div
-                  className="w-full h-[380px] overflow-hidden cursor-pointer relative group"
-                  onClick={() => window.open(book.pdfUrl, "_blank")}
+                  className="w-full h-[380px] overflow-hidden relative group"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (book.fileUrl) {
+                      window.open(book.fileUrl, "_blank");
+                    }
+                  }}
                 >
                   <img
-                    src={book.cover}
+                    src={book.cover || "https://via.placeholder.com/300x400"}
                     alt={book.title}
                     className="w-full h-full object-cover block transition-transform duration-500 group-hover:scale-[1.25]"
-                    style={{
-                      transform: "scale(1.20)",
-                      transformOrigin: "center center",
-                    }}
+                    style={{ transform: "scale(1.20)", transformOrigin: "center center" }}
                   />
-                  <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <span className="bg-white/90 text-gray-800 px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                      Click to Read PDF
-                    </span>
-                  </div>
+                  {book.fileUrl && (
+                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span className="bg-white/90 text-gray-800 px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                        Click to Read PDF
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-6 text-center flex flex-col flex-grow">
                   <h3 className="text-[17px] font-bold text-gray-800 mb-1 leading-tight line-clamp-1">
                     {book.title}
                   </h3>
-                  <p className="text-[13px] text-gray-400 mb-4">{book.grade}</p>
-
+                  <p className="text-[13px] text-gray-400 mb-4">{book.category || "General"}</p>
                   <p className="text-gray-500 text-[12px] leading-relaxed mb-6 line-clamp-3">
-                    {book.description}
+                    {book.description || "No description available"}
                   </p>
-
                   <div className="mt-auto">
                     <button
-                      onClick={() => navigate(`/book/${book.id}`)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/book/${book.id}`);
+                      }}
                       className="bg-[#42b893] hover:bg-[#369c7c] text-white font-medium py-2.5 px-10 rounded-full transition-colors duration-300 text-[14px]"
                     >
                       View details
@@ -163,12 +166,13 @@ export default function Books({
           <div className="flex justify-center mt-12">
             <button
               onClick={() => navigate("/all-books")}
-              className="bg-[#42b893] hover:bg-[#369c7c] text-white font-bold py-3 px-14 rounded-full transition-all duration-300 ease-in-out shadow-[0_4px_14px_0_rgba(66,184,147,0.39)] hover:shadow-[0_6px_20px_rgba(66,184,147,0.23)] hover:scale-105 active:scale-95"
+              className="bg-[#42b893] hover:bg-[#369c7c] text-white font-medium py-2.5 px-10 rounded-full transition-colors duration-300 text-[14px]"
             >
-              More Books
+              More Book
             </button>
           </div>
         )}
+
       </div>
     </section>
   );
