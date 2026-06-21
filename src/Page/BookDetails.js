@@ -28,7 +28,7 @@ export default function BookDetails() {
         }
 
         const data = await response.json();
-        const booksList = data.books || data.data?.books || data || [];
+        const booksList = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : (data.books || data.data?.books || []));
         
 const selectedBook = booksList.find((b) => 
   b._id === id || String(b.id) === String(id)

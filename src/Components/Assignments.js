@@ -16,7 +16,7 @@ export default function Assignments() {
       );
       const data = await res.json();
 
-      const list = data.assignments || data.data?.assignments || [];
+      const list = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : (data.assignments || data.data?.assignments || []));
       const userString = localStorage.getItem("user");
       const userId = userString ? JSON.parse(userString)._id : null;
 

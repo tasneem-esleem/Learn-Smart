@@ -32,7 +32,7 @@ export default function Books({
       })
         .then((res) => res.json())
         .then((data) => {
-          const booksList = Array.isArray(data) ? data : (data.books || data.data?.books || []);
+          const booksList = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : (data.books || data.data?.books || []));
           setBooks(booksList);
           setLoading(false);
         })

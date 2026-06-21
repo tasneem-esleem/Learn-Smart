@@ -69,7 +69,7 @@ export default function SubjectDetails() {
         );
         const lessonsData = await lessonsResponse.json();
 
-        const lessonsList = lessonsData.lessons || lessonsData.data?.lessons || [];
+        const lessonsList = Array.isArray(lessonsData) ? lessonsData : (Array.isArray(lessonsData.data) ? lessonsData.data : (lessonsData.lessons || lessonsData.data?.lessons || []));
         setLessons(lessonsList);
 
         const formattedSubject =
@@ -88,7 +88,7 @@ export default function SubjectDetails() {
 
         if (assignmentsResponse.ok) {
           const assignmentsData = await assignmentsResponse.json();
-          const assignmentsList = assignmentsData.assignments || assignmentsData.data?.assignments || [];
+          const assignmentsList = Array.isArray(assignmentsData) ? assignmentsData : (Array.isArray(assignmentsData.data) ? assignmentsData.data : (assignmentsData.assignments || assignmentsData.data?.assignments || []));
           setAssignments(assignmentsList);
         }
       } catch (error) {

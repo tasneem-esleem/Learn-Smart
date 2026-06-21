@@ -63,7 +63,7 @@ export default function ProfilePage() {
 
       if (response.ok) {
         const resData = await response.json();
-        const profile = resData.user || resData.data?.user;
+        const profile = resData.data || resData.user || resData.data?.user;
 
         if (profile) {
           setForm({
