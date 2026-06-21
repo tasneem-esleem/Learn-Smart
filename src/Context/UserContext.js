@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import api from '../api'; 
 
 export const UserContext = createContext();
 export const useAuth = () => useContext(UserContext);
@@ -23,21 +22,14 @@ export const UserProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (userData, token) => {
+  // ✅ صارت synchronous، بتحدث الـ state فوراً بدون أي طلب API تكراري
+  const login = (userData, token) => {
     if (token) {
-      localStorage.setItem("userToken", token); 
+      localStorage.setItem("userToken", token);
     }
-
-    try {
-      const res = await api.get("/auth/me"); 
-      const freshUser = res.data?.data?.user || userData;
-      setUser(freshUser);
-      localStorage.setItem("user", JSON.stringify(freshUser));
-    } catch {
+    if (userData) {
       setUser(userData);
-      if (userData) {
-        localStorage.setItem("user", JSON.stringify(userData));
-      }
+      localStorage.setItem("user", JSON.stringify(userData));
     }
   };
 

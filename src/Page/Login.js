@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { HiOutlineEyeOff, HiOutlineEye } from "react-icons/hi";
 import welcome from "../image/Frame (4).png";
 import google from "../image/Group 26690.png";
 import { useAuth } from "../Context/UserContext";
-import api from "../api"; 
+import api, { API_BASE_URL } from "../api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -16,6 +16,17 @@ export default function Login() {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // من غير أي تفسير لشو صار.
+  useEffect(() => {
+    const oauthError = searchParams.get("error");
+    if (oauthError === "google_not_configured") {
+      setError("تسجيل الدخول عبر جوجل غير مُفعّل حالياً على السيرفر. حاول لاحقاً أو سجّل دخول بالإيميل.");
+    } else if (oauthError === "google_auth_failed") {
+      setError("فشل تسجيل الدخول عبر جوجل. حاول مرة أخرى.");
+    }
+  }, [searchParams]);
 
   const handleLogin = async () => {
     if (!email || !password) return;
@@ -45,6 +56,15 @@ export default function Login() {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleLogin();
+  };
+
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${API_BASE_URL}/auth/google`;
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 sm:px-6 md:px-8">
       <div className="w-full max-w-md py-16 sm:py-20 md:py-24">
@@ -65,6 +85,7 @@ export default function Login() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Enter your Email"
             className="w-full border border-gray-200 rounded-full px-5 py-3 text-sm sm:text-base text-gray-600 outline-none focus:border-teal-400 transition placeholder:text-gray-300"
           />
@@ -72,11 +93,13 @@ export default function Login() {
             <input
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
               type={showPassword ? "text" : "password"}
               placeholder="Enter your Password"
               className="w-full border border-gray-200 rounded-full px-5 py-3 text-sm sm:text-base text-gray-600 outline-none focus:border-teal-400 transition placeholder:text-gray-300"
             />
             <button
+              type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 transition"
             >
@@ -118,10 +141,8 @@ export default function Login() {
 
           <p className="text-center text-gray-400 text-sm">Or</p>
           <button
-            onClick={() =>
-              (window.location.href =
-                "https://educational-platform-backend-935l.onrender.com/api/auth/google")
-            }
+            type="button"
+            onClick={handleGoogleLogin}
             className="w-full border border-gray-200 rounded-full py-3 text-sm sm:text-base text-gray-600 font-medium flex items-center justify-center gap-3 hover:bg-gray-50 transition"
           >
             <img src={google} alt="google" className="w-4 sm:w-5" /> Login With

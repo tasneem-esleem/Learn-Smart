@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { IoArrowBack } from 'react-icons/io5'
-import axios from 'axios'
 
-const api = axios.create({
-  baseURL: 'https://educational-platform-backend-935l.onrender.com',
-});
+import api from '../api'
+
 export default function OTP() {
   const [otp, setOtp] = useState(['', '', '', '', ''])
   const [timer, setTimer] = useState(59)
@@ -25,7 +23,7 @@ export default function OTP() {
 
   // Handle input change
   const handleChange = (value, index) => {
-    if (!/^\d*$/.test(value)) return 
+    if (!/^\d*$/.test(value)) return
     const newOtp = [...otp]
     newOtp[index] = value
     setOtp(newOtp)
@@ -45,12 +43,12 @@ export default function OTP() {
   // Resend code
   const handleResend = async () => {
     try {
-await api.post('/api/auth/resend-otp', { email });      
+      await api.post('/auth/resend-otp', { email });
       setOtp(['', '', '', '', '']);
       setTimer(59);
       inputsRef.current[0].focus();
     } catch (error) {
-      alert("فشل إعادة إرسال الكود، حاول مجدداً");
+      alert(error.message || "فشل إعادة إرسال الكود، حاول مجدداً");
     }
   }
 
@@ -63,13 +61,10 @@ await api.post('/api/auth/resend-otp', { email });
     }
 
     try {
-      const response = await api.post('/api/auth/verify-otp', { email, otp: code });
-
-      if (response.status === 200) {
-        navigate('/reset-password', { state: { email } });
-      }
+      await api.post('/auth/verify-otp', { email, otp: code });
+      navigate('/reset-password', { state: { email } });
     } catch (error) {
-      alert("الكود غير صحيح أو انتهت صلاحيته");
+      alert(error.message || "الكود غير صحيح أو انتهت صلاحيته");
       console.error("Verification error:", error);
     }
   }
