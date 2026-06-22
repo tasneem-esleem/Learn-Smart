@@ -11,18 +11,6 @@ export const GradeHeader = ({ title }) => (
   </div>
 );
 
-const fetchWithRetry = async (url, options = {}, retries = 5, delay = 8000) => {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const res = await fetch(url, options);
-      if (res.ok) return res;
-    } catch (err) {
-      if (i < retries - 1) await new Promise((r) => setTimeout(r, delay));
-    }
-  }
-  return null;
-};
-
 export default function Books({
   moreBooks = false,
   data = null,
@@ -36,25 +24,16 @@ export default function Books({
   useEffect(() => {
     if (!data) {
       const token = localStorage.getItem("userToken");
-      fetchWithRetry(
-        "https://educational-platform-backend-935l.onrender.com/api/books",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Cache-Control": "no-cache",
-          },
-        }
-      )
-        .then((res) => (res ? res.json() : null))
+      fetch("https://educational-platform-backend-935l.onrender.com/api/books", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-cache",
+        },
+      })
+        .then((res) => res.json())
         .then((data) => {
-          if (data) {
-            const booksList = Array.isArray(data)
-              ? data
-              : Array.isArray(data.data)
-              ? data.data
-              : data.books || data.data?.books || [];
-            setBooks(booksList);
-          }
+          const booksList = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : (data.books || data.data?.books || []));
+          setBooks(booksList);
           setLoading(false);
         })
         .catch((err) => {
@@ -193,6 +172,7 @@ export default function Books({
             </button>
           </div>
         )}
+
       </div>
     </section>
   );

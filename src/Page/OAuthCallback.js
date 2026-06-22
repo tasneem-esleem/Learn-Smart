@@ -25,7 +25,6 @@ export default function OAuthCallback() {
 
     localStorage.setItem('userToken', token);
 
-    // صحّي السيرفر فوراً بدون انتظار
     wakeUpServer();
 
     const fetchUser = async () => {

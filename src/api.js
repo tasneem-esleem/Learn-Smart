@@ -61,3 +61,13 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+
+// ===== AUTH TOKEN HELPER FIX =====
+export const setAuthToken = (token) => {
+  if (token) {
+    api.defaults.headers.common.Authorization = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.common.Authorization;
+  }
+};

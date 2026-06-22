@@ -33,11 +33,6 @@ export default function Login() {
     setLoading(true);
     setError("");
 
-    // صحّي Render قبل تسجيل الدخول عشان الكتب والدروس تظهر فور وصول الـ home
-    fetch('https://educational-platform-backend-935l.onrender.com/api/books', {
-      cache: 'no-store',
-    }).catch(() => {});
-
     try {
       const res = await api.post("/auth/login", { email, password });
 

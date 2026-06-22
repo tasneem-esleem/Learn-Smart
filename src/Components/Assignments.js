@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Profilesidebar from "./Profilesidebar";
 
-const fetchWithRetry = async (url, options = {}, retries = 5, delay = 8000) => {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const res = await fetch(url, options);
-      if (res.ok) return res;
-    } catch (err) {
-      if (i < retries - 1) await new Promise((r) => setTimeout(r, delay));
-    }
-  }
-  return null;
-};
-
 export default function Assignments() {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,13 +8,12 @@ export default function Assignments() {
   const fetchAssignments = async () => {
     try {
       const token = localStorage.getItem("userToken") || localStorage.getItem("token");
-      const res = await fetchWithRetry(
+      const res = await fetch(
         "https://educational-platform-backend-935l.onrender.com/api/assignments",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (!res) { setLoading(false); return; }
       const data = await res.json();
 
       const list = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : (data.assignments || data.data?.assignments || []));
