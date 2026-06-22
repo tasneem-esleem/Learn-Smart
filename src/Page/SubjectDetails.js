@@ -5,6 +5,18 @@ import SubjectTopSection from "../Components/SubjectTopSection";
 import LessonCard from "../Components/LessonCard";
 import EmptyState from "../Components/EmptyState";
 
+const fetchWithRetry = async (url, options = {}, retries = 3, delay = 3000) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url, options);
+      if (res.ok) return res;
+    } catch (err) {
+      if (i < retries - 1) await new Promise((r) => setTimeout(r, delay));
+    }
+  }
+  return null;
+};
+
 const LessonSkeleton = () => (
   <div className="w-full flex flex-col gap-4">
     {[1, 2, 3].map((n) => (
@@ -64,12 +76,12 @@ export default function SubjectDetails() {
       setAssignmentsLoading(true);
 
       try {
-        const lessonsResponse = await fetch(
+        const lessonsResponse = await fetchWithRetry(
           `https://educational-platform-backend-935l.onrender.com/api/lessons/course/${bookId}`,
         );
-        const lessonsData = await lessonsResponse.json();
+        const lessonsData = lessonsResponse ? await lessonsResponse.json() : null;
 
-        const lessonsList = Array.isArray(lessonsData) ? lessonsData : (Array.isArray(lessonsData.data) ? lessonsData.data : (lessonsData.lessons || lessonsData.data?.lessons || []));
+        const lessonsList = lessonsData ? (Array.isArray(lessonsData) ? lessonsData : (Array.isArray(lessonsData.data) ? lessonsData.data : (lessonsData.lessons || lessonsData.data?.lessons || []))) : [];
         setLessons(lessonsList);
 
         const formattedSubject =
@@ -77,7 +89,7 @@ export default function SubjectDetails() {
           subjectName.slice(1).toLowerCase();
 
         const token = localStorage.getItem("userToken");
-        const assignmentsResponse = await fetch(
+        const assignmentsResponse = await fetchWithRetry(
           `https://educational-platform-backend-935l.onrender.com/api/assignments?subject=${formattedSubject}`,
           {
             headers: {
@@ -86,7 +98,7 @@ export default function SubjectDetails() {
           },
         );
 
-        if (assignmentsResponse.ok) {
+        if (assignmentsResponse) {
           const assignmentsData = await assignmentsResponse.json();
           const assignmentsList = Array.isArray(assignmentsData) ? assignmentsData : (Array.isArray(assignmentsData.data) ? assignmentsData.data : (assignmentsData.assignments || assignmentsData.data?.assignments || []));
           setAssignments(assignmentsList);
