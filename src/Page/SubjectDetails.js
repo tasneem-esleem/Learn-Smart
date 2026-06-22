@@ -5,7 +5,7 @@ import SubjectTopSection from "../Components/SubjectTopSection";
 import LessonCard from "../Components/LessonCard";
 import EmptyState from "../Components/EmptyState";
 
-const fetchWithRetry = async (url, options = {}, retries = 3, delay = 3000) => {
+const fetchWithRetry = async (url, options = {}, retries = 5, delay = 8000) => {
   for (let i = 0; i < retries; i++) {
     try {
       const res = await fetch(url, options);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Profilesidebar from "./Profilesidebar";
 
-const fetchWithRetry = async (url, options = {}, retries = 3, delay = 3000) => {
+const fetchWithRetry = async (url, options = {}, retries = 5, delay = 8000) => {
   for (let i = 0; i < retries; i++) {
     try {
       const res = await fetch(url, options);

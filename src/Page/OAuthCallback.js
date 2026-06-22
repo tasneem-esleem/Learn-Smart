@@ -3,6 +3,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../Context/UserContext';
 import api from '../api';
 
+const wakeUpServer = () => {
+  fetch('https://educational-platform-backend-935l.onrender.com/api/books', {
+    cache: 'no-store',
+  }).catch(() => {});
+};
+
 export default function OAuthCallback() {
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
@@ -13,12 +19,14 @@ export default function OAuthCallback() {
     const token = searchParams.get('token');
 
     if (!token) {
-
       navigate('/login?error=google_auth_failed');
       return;
     }
 
     localStorage.setItem('userToken', token);
+
+    // صحّي السيرفر فوراً بدون انتظار
+    wakeUpServer();
 
     const fetchUser = async () => {
       try {
@@ -33,7 +41,6 @@ export default function OAuthCallback() {
         localStorage.removeItem('userToken');
         localStorage.removeItem('user');
         setError(err.message || 'حدث خطأ أثناء تسجيل الدخول عبر جوجل');
-
         setTimeout(() => navigate('/login?error=google_auth_failed'), 1500);
       }
     };
